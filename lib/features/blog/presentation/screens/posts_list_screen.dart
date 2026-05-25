@@ -170,7 +170,7 @@ class _PostCard extends StatelessWidget {
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (_, _, _) => Container(
                     height: 200,
                     color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     child: const Icon(Icons.image, size: 64, color: Colors.grey),

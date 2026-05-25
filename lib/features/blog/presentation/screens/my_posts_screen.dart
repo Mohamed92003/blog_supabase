@@ -83,7 +83,7 @@ class _MyPostCard extends StatelessWidget {
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(post.imageUrl!, width: 60, height: 60, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(width: 60, height: 60, color: Colors.grey[300], child: const Icon(Icons.image))),
+                  errorBuilder: (_, _, _) => Container(width: 60, height: 60, color: Colors.grey[300], child: const Icon(Icons.image))),
               )
             : Container(
                 width: 60,

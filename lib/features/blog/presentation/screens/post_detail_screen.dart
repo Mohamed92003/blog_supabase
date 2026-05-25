@@ -77,7 +77,7 @@ class _PostDetailViewState extends State<PostDetailView> {
                   flexibleSpace: post.imageUrl != null
                       ? FlexibleSpaceBar(
                           background: Image.network(post.imageUrl!, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest)),
+                            errorBuilder: (_, _, _) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest)),
                         )
                       : null,
                   actions: isOwner
