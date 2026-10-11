@@ -17,10 +17,16 @@ class PostCrudDataSourceImpl implements PostCrudDataSource {
     String? category,
   }) async {
     try {
-      // TODO: Implement createPost
-      // Use _databaseClient.insert() to insert a new post into the 'posts' table
-      // Then fetch the created post with author join using getPostById()
-      throw UnimplementedError('createPost not implemented yet');
+      final response = await _databaseClient.insert('posts', {
+        'title': title,
+        'content': content,
+        'author_id': authorId,
+        'image_url': imageUrl,
+        'category': category,
+      });
+      final postId = response['id'] as String;
+
+      return await getPostById(postId);
     } on ServerException {
       rethrow;
     } catch (e) {
@@ -31,10 +37,12 @@ class PostCrudDataSourceImpl implements PostCrudDataSource {
   @override
   Future<PostModel> getPostById(String id) async {
     try {
-      // TODO: Implement getPostById
-      // Use _databaseClient.selectById() with columns: '*, author:profiles!author_id(*)'
-      // Parse the response into a PostModel
-      throw UnimplementedError('getPostById not implemented yet');
+      final response = await _databaseClient.selectById(
+        'posts',
+        id,
+        columns: '*,author:profiles!author_id(*)',
+      );
+      return PostModel.fromJson(response);
     } on ServerException {
       rethrow;
     } catch (e) {
@@ -51,11 +59,15 @@ class PostCrudDataSourceImpl implements PostCrudDataSource {
     String? category,
   }) async {
     try {
-      // TODO: Implement updatePost
-      // Build update data map with non-null fields
-      // Use _databaseClient.update() to update the post
-      // Then fetch the updated post with author join using getPostById()
-      throw UnimplementedError('updatePost not implemented yet');
+      final data = {
+        'updated_at': DateTime.now().toIso8601String(),
+        'title': title,
+        'content': content,
+        'image_url': imageUrl,
+        'category': category,
+      }..removeWhere((key, value) => value == null);
+      await _databaseClient.update('posts', id, data);
+      return await getPostById(id);
     } on ServerException {
       rethrow;
     } catch (e) {
@@ -66,9 +78,7 @@ class PostCrudDataSourceImpl implements PostCrudDataSource {
   @override
   Future<void> deletePost(String id) async {
     try {
-      // TODO: Implement deletePost
-      // Use _databaseClient.delete() to delete the post from the 'posts' table
-      throw UnimplementedError('deletePost not implemented yet');
+      await _databaseClient.delete('posts', id);
     } on ServerException {
       rethrow;
     } catch (e) {

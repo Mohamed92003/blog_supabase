@@ -25,8 +25,9 @@ class PostModel extends PostEntity {
       author: json['author'] != null ? ProfileModel.fromJson(json['author'] as Map<String, dynamic>) : null,
       category: json['category'] as String?,
       viewCount: json['view_count'] as int? ?? 0,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String? ?? DateTime.now().toIso8601String()),
+      updatedAt: DateTime.parse(json['updated_at'] as String? ?? DateTime.now().toIso8601String()),
+
     );
   }
 

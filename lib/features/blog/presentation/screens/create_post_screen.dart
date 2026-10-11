@@ -1,3 +1,4 @@
+import 'package:blog_app/core/constants/post_categories.dart';
 import 'package:blog_app/core/di/injection_container.dart';
 import 'package:blog_app/features/auth/presentation/bloc/session/session_bloc.dart';
 import 'package:blog_app/features/auth/presentation/bloc/session/session_state.dart';
@@ -34,8 +35,6 @@ class _CreatePostViewState extends State<CreatePostView> {
   final _contentController = TextEditingController();
   String? _selectedCategory;
   String? _imagePath;
-
-  final _categories = ['Technology', 'Lifestyle', 'Travel', 'Food', 'Health', 'Education', 'Other'];
 
   @override
   void dispose() {
@@ -91,13 +90,13 @@ class _CreatePostViewState extends State<CreatePostView> {
                     ),
                     child: _imagePath == null
                         ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add_photo_alternate_outlined, size: 48, color: Colors.grey[500]),
-                              const SizedBox(height: 8),
-                              Text('Add Cover Image', style: TextStyle(color: Colors.grey[500])),
-                            ],
-                          )
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add_photo_alternate_outlined, size: 48, color: Colors.grey[500]),
+                        const SizedBox(height: 8),
+                        Text('Add Cover Image', style: TextStyle(color: Colors.grey[500])),
+                      ],
+                    )
                         : null,
                   ),
                 ),
@@ -112,7 +111,7 @@ class _CreatePostViewState extends State<CreatePostView> {
                 DropdownButtonFormField<String>(
                   initialValue: _selectedCategory,
                   decoration: const InputDecoration(labelText: 'Category'),
-                  items: _categories.map((c) => DropdownMenuItem(value: c.toLowerCase(), child: Text(c))).toList(),
+                  items: kPostCategories.map((c) => DropdownMenuItem(value: c.value, child: Text(c.label))).toList(),
                   onChanged: (value) => setState(() => _selectedCategory = value),
                 ),
                 const SizedBox(height: 16),

@@ -52,16 +52,10 @@ final sl = GetIt.instance;
 Future<void> initDependencies() async {
   // ===== Core =====
   sl.registerLazySingleton<AuthClient>(
-    () => AuthClientImpl(
-      Supabase.instance.client.auth,
-      Supabase.instance.client.functions,
-    ),
-  );
-  sl.registerLazySingleton<StorageClient>(
-    () => StorageClientImpl(Supabase.instance.client),
-  );
+    () => AuthClientImpl(Supabase.instance.client.auth, Supabase.instance.client.functions),);
+  sl.registerLazySingleton<StorageClient>(() => StorageClientImpl(Supabase.instance.client),);
   sl.registerLazySingleton<DatabaseClient>(
-    () => DatabaseClientImpl(sl()),
+        () => DatabaseClientImpl(Supabase.instance.client),
   );
 
   // ===== Auth DataSources =====
@@ -72,11 +66,21 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<ProfileDataSource>(() => ProfileDataSourceImpl(sl(), sl()));
 
   // ===== Auth Repositories =====
-  sl.registerLazySingleton<EmailAuthRepository>(() => EmailAuthRepositoryImpl(emailAuthDataSource: sl()));
-  sl.registerLazySingleton<SocialAuthRepository>(() => SocialAuthRepositoryImpl(socialAuthDataSource: sl()));
-  sl.registerLazySingleton<PhoneAuthRepository>(() => PhoneAuthRepositoryImpl(phoneAuthDataSource: sl()));
-  sl.registerLazySingleton<SessionRepository>(() => SessionRepositoryImpl(sessionDataSource: sl()));
-  sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(profileDataSource: sl()));
+  sl.registerLazySingleton<EmailAuthRepository>(
+    () => EmailAuthRepositoryImpl(emailAuthDataSource: sl()),
+  );
+  sl.registerLazySingleton<SocialAuthRepository>(
+    () => SocialAuthRepositoryImpl(socialAuthDataSource: sl()),
+  );
+  sl.registerLazySingleton<PhoneAuthRepository>(
+    () => PhoneAuthRepositoryImpl(phoneAuthDataSource: sl()),
+  );
+  sl.registerLazySingleton<SessionRepository>(
+    () => SessionRepositoryImpl(sessionDataSource: sl()),
+  );
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(profileDataSource: sl()),
+  );
 
   // ===== Auth BLoCs =====
   sl.registerFactory(() => EmailAuthBloc(emailAuthRepository: sl()));
@@ -91,9 +95,15 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<CommentDataSource>(() => CommentDataSourceImpl(sl()));
 
   // ===== Blog Repositories =====
-  sl.registerLazySingleton<PostCrudRepository>(() => PostCrudRepositoryImpl(postCrudDataSource: sl()));
-  sl.registerLazySingleton<PostQueryRepository>(() => PostQueryRepositoryImpl(postQueryDataSource: sl()));
-  sl.registerLazySingleton<CommentRepository>(() => CommentRepositoryImpl(commentDataSource: sl()));
+  sl.registerLazySingleton<PostCrudRepository>(
+    () => PostCrudRepositoryImpl(postCrudDataSource: sl()),
+  );
+  sl.registerLazySingleton<PostQueryRepository>(
+    () => PostQueryRepositoryImpl(postQueryDataSource: sl()),
+  );
+  sl.registerLazySingleton<CommentRepository>(
+    () => CommentRepositoryImpl(commentDataSource: sl()),
+  );
 
   // ===== Blog BLoCs =====
   sl.registerFactory(() => PostCrudBloc(postCrudRepository: sl()));

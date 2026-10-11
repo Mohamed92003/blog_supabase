@@ -13,7 +13,7 @@ class ProfileModel extends ProfileEntity {
       id: json['id'] as String,
       name: json['name'] as String?,
       avatarUrl: json['avatar_url'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String? ?? DateTime.now().toIso8601String()),
     );
   }
 

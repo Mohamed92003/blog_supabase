@@ -9,10 +9,19 @@ class PostQueryDataSourceImpl implements PostQueryDataSource {
   PostQueryDataSourceImpl(this._databaseClient);
 
   @override
-  Future<List<PostModel>> getPosts({int? rangeFrom, int? rangeTo}) async {
+  Future<List<PostModel>> getPosts({int? rangeFrom, int? rangeTo, String? category}) async {
     try {
-      // TODO: Implement getPosts
-      throw UnimplementedError('getPosts not implemented yet');
+      final response = await _databaseClient.select(
+        'posts',
+        columns: '*,author:profiles!author_id(*)',
+        rangeFrom: rangeFrom,
+        rangeTo: rangeTo,
+        orderBy: 'created_at',
+        ascending: false,
+        filters: category != null ? {'category': category} : null,
+      );
+      print(response);
+      return response.map((e) => PostModel.fromJson(e)).toList();
     } on ServerException {
       rethrow;
     } catch (e) {
@@ -23,8 +32,18 @@ class PostQueryDataSourceImpl implements PostQueryDataSource {
   @override
   Future<List<PostModel>> getMyPosts({required String userId, String? category}) async {
     try {
-      // TODO: Implement getMyPosts
-      throw UnimplementedError('getMyPosts not implemented yet');
+      final filters = <String, dynamic>{
+        'author_id': userId,
+      };
+      if (category != null) {
+        filters['category'] = category;
+      }
+      final response = await _databaseClient.select(
+        'posts',
+        columns: '*,author:profiles!author_id(*)',
+        filters: filters,
+      );
+      return response.map((e) => PostModel.fromJson(e)).toList();
     } on ServerException {
       rethrow;
     } catch (e) {
@@ -35,8 +54,13 @@ class PostQueryDataSourceImpl implements PostQueryDataSource {
   @override
   Future<List<PostModel>> searchPosts({required String query}) async {
     try {
-      // TODO: Implement searchPosts
-      throw UnimplementedError('searchPosts not implemented yet');
+     final response = await _databaseClient.search(
+       'posts',
+       column: 'title',
+       query: query,
+       columns: '*,author:profiles!author_id(*)',
+     );
+     return response.map((e) => PostModel.fromJson(e)).toList();
     } on ServerException {
       rethrow;
     } catch (e) {

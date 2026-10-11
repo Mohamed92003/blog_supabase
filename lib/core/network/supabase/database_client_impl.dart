@@ -60,14 +60,18 @@ class DatabaseClientImpl implements DatabaseClient {
     String id,
     Map<String, dynamic> data,
   ) async {
-    // TODO: Implement update
-    throw UnimplementedError('update not implemented yet');
+    final response = await _client
+        .from(table)
+        .update(data)
+        .eq('id', id)
+        .select()
+        .single();
+    return response;
   }
 
   @override
   Future<void> delete(String table, String id) async {
-    // TODO: Implement delete
-    throw UnimplementedError('delete not implemented yet');
+    await _client.from(table).delete().eq('id', id);
   }
 
   @override
@@ -77,8 +81,12 @@ class DatabaseClientImpl implements DatabaseClient {
     required String query,
     String columns = '*',
   }) async {
-    // TODO: Implement search
-    throw UnimplementedError('search not implemented yet');
+    final response = await _client
+        .from(table)
+        .select(columns)
+        .ilike(column, '%$query%')
+        .order('created_at', ascending: false);
+    return List<Map<String, dynamic>>.from(response);
   }
 
   @override

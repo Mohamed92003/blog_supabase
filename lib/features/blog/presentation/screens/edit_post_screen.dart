@@ -1,3 +1,4 @@
+import 'package:blog_app/core/constants/post_categories.dart';
 import 'package:blog_app/core/di/injection_container.dart';
 import 'package:blog_app/features/blog/domain/entities/post_entity.dart';
 import 'package:blog_app/features/blog/presentation/bloc/post_crud/post_crud_bloc.dart';
@@ -38,8 +39,6 @@ class _EditPostViewState extends State<EditPostView> {
   String? _selectedCategory;
   String? _imagePath;
   String? _existingImageUrl;
-
-  final _categories = ['Technology', 'Lifestyle', 'Travel', 'Food', 'Health', 'Education', 'Other'];
 
   @override
   void initState() {
@@ -101,18 +100,18 @@ class _EditPostViewState extends State<EditPostView> {
                       image: _imagePath != null
                           ? DecorationImage(image: FileImage(File(_imagePath!)), fit: BoxFit.cover)
                           : _existingImageUrl != null
-                              ? DecorationImage(image: NetworkImage(_existingImageUrl!), fit: BoxFit.cover)
-                              : null,
+                          ? DecorationImage(image: NetworkImage(_existingImageUrl!), fit: BoxFit.cover)
+                          : null,
                     ),
                     child: (_imagePath == null && _existingImageUrl == null)
                         ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add_photo_alternate_outlined, size: 48, color: Colors.grey[500]),
-                              const SizedBox(height: 8),
-                              Text('Add Cover Image', style: TextStyle(color: Colors.grey[500])),
-                            ],
-                          )
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add_photo_alternate_outlined, size: 48, color: Colors.grey[500]),
+                        const SizedBox(height: 8),
+                        Text('Add Cover Image', style: TextStyle(color: Colors.grey[500])),
+                      ],
+                    )
                         : null,
                   ),
                 ),
@@ -127,7 +126,7 @@ class _EditPostViewState extends State<EditPostView> {
                 DropdownButtonFormField<String>(
                   initialValue: _selectedCategory,
                   decoration: const InputDecoration(labelText: 'Category'),
-                  items: _categories.map((c) => DropdownMenuItem(value: c.toLowerCase(), child: Text(c))).toList(),
+                  items: kPostCategories.map((c) => DropdownMenuItem(value: c.value, child: Text(c.label))).toList(),
                   onChanged: (value) => setState(() => _selectedCategory = value),
                 ),
                 const SizedBox(height: 16),
