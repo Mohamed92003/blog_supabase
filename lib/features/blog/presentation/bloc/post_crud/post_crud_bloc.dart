@@ -13,13 +13,31 @@ class PostCrudBloc extends Bloc<PostCrudEvent, PostCrudState> {
     on<DeletePostEvent>(_onDeletePost);
   }
 
-  Future<void> _onCreatePost(CreatePostEvent event, Emitter<PostCrudState> emit) async {
+  Future<void> _onCreatePost(
+    CreatePostEvent event,
+    Emitter<PostCrudState> emit,
+  ) async {
     emit(PostCrudLoading());
+
+    String? imageUrl;
+    if (event.imagePath != null) {
+      final uploadResult = await postCrudRepository.uploadPostImage(
+        authorId: event.authorId,
+        filePath: event.imagePath!,
+      );
+      final uploaded = uploadResult.fold<String?>((failure) {
+        emit(PostCrudError(failure.message));
+        return null;
+      }, (url) => url);
+      if (uploaded == null) return;
+      imageUrl = uploaded;
+    }
+
     final result = await postCrudRepository.createPost(
       title: event.title,
       content: event.content,
       authorId: event.authorId,
-      imageUrl: event.imagePath,
+      imageUrl: imageUrl,
       category: event.category,
     );
     result.fold(
@@ -28,7 +46,10 @@ class PostCrudBloc extends Bloc<PostCrudEvent, PostCrudState> {
     );
   }
 
-  Future<void> _onGetPostById(GetPostByIdEvent event, Emitter<PostCrudState> emit) async {
+  Future<void> _onGetPostById(
+    GetPostByIdEvent event,
+    Emitter<PostCrudState> emit,
+  ) async {
     emit(PostCrudLoading());
     final result = await postCrudRepository.getPostById(event.postId);
     result.fold(
@@ -37,13 +58,31 @@ class PostCrudBloc extends Bloc<PostCrudEvent, PostCrudState> {
     );
   }
 
-  Future<void> _onUpdatePost(UpdatePostEvent event, Emitter<PostCrudState> emit) async {
+  Future<void> _onUpdatePost(
+    UpdatePostEvent event,
+    Emitter<PostCrudState> emit,
+  ) async {
     emit(PostCrudLoading());
+
+    String? imageUrl;
+    if (event.imagePath != null) {
+      final uploadResult = await postCrudRepository.uploadPostImage(
+        authorId: event.authorId,
+        filePath: event.imagePath!,
+      );
+      final uploaded = uploadResult.fold<String?>((failure) {
+        emit(PostCrudError(failure.message));
+        return null;
+      }, (url) => url);
+      if (uploaded == null) return;
+      imageUrl = uploaded;
+    }
+
     final result = await postCrudRepository.updatePost(
       id: event.id,
       title: event.title,
       content: event.content,
-      imageUrl: event.imagePath,
+      imageUrl: imageUrl,
       category: event.category,
     );
     result.fold(
@@ -52,7 +91,10 @@ class PostCrudBloc extends Bloc<PostCrudEvent, PostCrudState> {
     );
   }
 
-  Future<void> _onDeletePost(DeletePostEvent event, Emitter<PostCrudState> emit) async {
+  Future<void> _onDeletePost(
+    DeletePostEvent event,
+    Emitter<PostCrudState> emit,
+  ) async {
     emit(PostCrudLoading());
     final result = await postCrudRepository.deletePost(event.postId);
     result.fold(

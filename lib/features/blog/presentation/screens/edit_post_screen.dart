@@ -67,7 +67,11 @@ class _EditPostViewState extends State<EditPostView> {
               return TextButton(
                 onPressed: state is PostCrudLoading ? null : _submitUpdate,
                 child: state is PostCrudLoading
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Text('Save'),
               );
             },
@@ -77,10 +81,20 @@ class _EditPostViewState extends State<EditPostView> {
       body: BlocListener<PostCrudBloc, PostCrudState>(
         listener: (context, state) {
           if (state is PostUpdated) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post updated!'), backgroundColor: Colors.green));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Post updated!'),
+                backgroundColor: Colors.green,
+              ),
+            );
             Navigator.of(context).pop(true);
           } else if (state is PostCrudError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
           }
         },
         child: SingleChildScrollView(
@@ -95,23 +109,38 @@ class _EditPostViewState extends State<EditPostView> {
                   child: Container(
                     height: 200,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(16),
                       image: _imagePath != null
-                          ? DecorationImage(image: FileImage(File(_imagePath!)), fit: BoxFit.cover)
+                          ? DecorationImage(
+                              image: FileImage(File(_imagePath!)),
+                              fit: BoxFit.cover,
+                            )
                           : _existingImageUrl != null
-                          ? DecorationImage(image: NetworkImage(_existingImageUrl!), fit: BoxFit.cover)
+                          ? DecorationImage(
+                              image: NetworkImage(_existingImageUrl!),
+                              fit: BoxFit.cover,
+                            )
                           : null,
                     ),
                     child: (_imagePath == null && _existingImageUrl == null)
                         ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add_photo_alternate_outlined, size: 48, color: Colors.grey[500]),
-                        const SizedBox(height: 8),
-                        Text('Add Cover Image', style: TextStyle(color: Colors.grey[500])),
-                      ],
-                    )
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_photo_alternate_outlined,
+                                size: 48,
+                                color: Colors.grey[500],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Add Cover Image',
+                                style: TextStyle(color: Colors.grey[500]),
+                              ),
+                            ],
+                          )
                         : null,
                   ),
                 ),
@@ -120,21 +149,36 @@ class _EditPostViewState extends State<EditPostView> {
                   controller: _titleController,
                   decoration: const InputDecoration(labelText: 'Title'),
                   style: Theme.of(context).textTheme.titleLarge,
-                  validator: (value) => value == null || value.trim().isEmpty ? 'Title is required' : null,
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Title is required'
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: _selectedCategory,
                   decoration: const InputDecoration(labelText: 'Category'),
-                  items: kPostCategories.map((c) => DropdownMenuItem(value: c.value, child: Text(c.label))).toList(),
-                  onChanged: (value) => setState(() => _selectedCategory = value),
+                  items: kPostCategories
+                      .map(
+                        (c) => DropdownMenuItem(
+                          value: c.value,
+                          child: Text(c.label),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) =>
+                      setState(() => _selectedCategory = value),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _contentController,
-                  decoration: const InputDecoration(labelText: 'Content', alignLabelWithHint: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Content',
+                    alignLabelWithHint: true,
+                  ),
                   maxLines: 15,
-                  validator: (value) => value == null || value.trim().isEmpty ? 'Content is required' : null,
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Content is required'
+                      : null,
                 ),
               ],
             ),
@@ -157,12 +201,15 @@ class _EditPostViewState extends State<EditPostView> {
 
   void _submitUpdate() {
     if (!_formKey.currentState!.validate()) return;
-    context.read<PostCrudBloc>().add(UpdatePostEvent(
-      id: widget.post.id,
-      title: _titleController.text.trim(),
-      content: _contentController.text.trim(),
-      imagePath: _imagePath,
-      category: _selectedCategory,
-    ));
+    context.read<PostCrudBloc>().add(
+      UpdatePostEvent(
+        id: widget.post.id,
+        authorId: widget.post.authorId,
+        title: _titleController.text.trim(),
+        content: _contentController.text.trim(),
+        imagePath: _imagePath,
+        category: _selectedCategory,
+      ),
+    );
   }
 }
