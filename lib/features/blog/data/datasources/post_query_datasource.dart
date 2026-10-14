@@ -6,4 +6,6 @@ abstract class PostQueryDataSource {
   Future<List<PostModel>> getMyPosts({required String userId, String? category});
 
   Future<List<PostModel>> searchPosts({required String query});
+
+  Stream<PostModel> watchNewPosts();
 }

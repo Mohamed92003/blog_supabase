@@ -11,9 +11,17 @@ class PostQueryRepositoryImpl implements PostQueryRepository {
   PostQueryRepositoryImpl({required this.postQueryDataSource});
 
   @override
-  Future<Either<Failure, List<PostEntity>>> getPosts({int? rangeFrom, int? rangeTo , String? category}) async {
+  Future<Either<Failure, List<PostEntity>>> getPosts({
+    int? rangeFrom,
+    int? rangeTo,
+    String? category,
+  }) async {
     try {
-      final posts = await postQueryDataSource.getPosts(rangeFrom: rangeFrom, rangeTo: rangeTo, category: category);
+      final posts = await postQueryDataSource.getPosts(
+        rangeFrom: rangeFrom,
+        rangeTo: rangeTo,
+        category: category,
+      );
       return Right(posts);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -23,9 +31,15 @@ class PostQueryRepositoryImpl implements PostQueryRepository {
   }
 
   @override
-  Future<Either<Failure, List<PostEntity>>> getMyPosts({required String userId, String? category}) async {
+  Future<Either<Failure, List<PostEntity>>> getMyPosts({
+    required String userId,
+    String? category,
+  }) async {
     try {
-      final posts = await postQueryDataSource.getMyPosts(userId: userId, category: category);
+      final posts = await postQueryDataSource.getMyPosts(
+        userId: userId,
+        category: category,
+      );
       return Right(posts);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -35,7 +49,9 @@ class PostQueryRepositoryImpl implements PostQueryRepository {
   }
 
   @override
-  Future<Either<Failure, List<PostEntity>>> searchPosts({required String query}) async {
+  Future<Either<Failure, List<PostEntity>>> searchPosts({
+    required String query,
+  }) async {
     try {
       final posts = await postQueryDataSource.searchPosts(query: query);
       return Right(posts);
@@ -44,5 +60,18 @@ class PostQueryRepositoryImpl implements PostQueryRepository {
     } catch (e) {
       return Left(ServerFailure('Unexpected error: ${e.toString()}'));
     }
+  }
+
+  @override
+  Stream<Either<Failure, PostEntity>> watchNewPosts() {
+    return postQueryDataSource.watchNewPosts().map<Either<Failure, PostEntity>>((post) => Right(post)).handleError((
+        error,
+        ) {
+      if (error is ServerException) {
+        return Left(ServerFailure(error.message));
+      } else {
+        return Left(ServerFailure('Unexpected error: ${error.toString()}'));
+      }
+    });
   }
 }

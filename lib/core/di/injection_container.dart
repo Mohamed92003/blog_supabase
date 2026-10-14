@@ -115,7 +115,7 @@ Future<void> initDependencies() async {
     () => PostCrudDataSourceImpl(sl(), sl()),
   );
   sl.registerLazySingleton<PostQueryDataSource>(
-    () => PostQueryDataSourceImpl(sl()),
+    () => PostQueryDataSourceImpl(sl() , sl()),
   );
   sl.registerLazySingleton<CommentDataSource>(
     () => CommentDataSourceImpl(sl()),
