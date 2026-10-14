@@ -19,6 +19,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'core/network/supabase/realtime_client.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
