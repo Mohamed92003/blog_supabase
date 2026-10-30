@@ -31,7 +31,9 @@ class CommentRepositoryImpl implements CommentRepository {
   }
 
   @override
-  Future<Either<Failure, List<CommentEntity>>> getComments({required String postId}) async {
+  Future<Either<Failure, List<CommentEntity>>> getComments({
+    required String postId,
+  }) async {
     try {
       final comments = await commentDataSource.getComments(postId: postId);
       return Right(comments);
@@ -52,5 +54,37 @@ class CommentRepositoryImpl implements CommentRepository {
     } catch (e) {
       return Left(ServerFailure('Unexpected error: ${e.toString()}'));
     }
+  }
+
+  @override
+  Stream<Either<Failure, CommentEntity>> watchNewComments({
+    required String postId,
+  }) {
+    return commentDataSource
+        .watchNewComments(postId: postId)
+        .map<Either<Failure, CommentEntity>>((comment) => Right(comment))
+        .handleError((error) {
+          if (error is ServerException) {
+            return Left(ServerFailure(error.message));
+          } else {
+            return Left(ServerFailure('Unexpected error: ${error.toString()}'));
+          }
+        });
+  }
+
+  @override
+  Stream<Either<Failure, String>> watchDeletedComments({
+    required String postId,
+  }) {
+    return commentDataSource
+        .watchDeletedComments(postId: postId)
+        .map<Either<Failure, String>>((commentId) => Right(commentId))
+        .handleError((error) {
+          if (error is ServerException) {
+            return Left(ServerFailure(error.message));
+          } else {
+            return Left(ServerFailure('Unexpected error: ${error.toString()}'));
+          }
+        });
   }
 }

@@ -49,6 +49,7 @@ app.*.map.json
 .env
 .env.local
 .env.production
+env/dev.json
 
 # iOS/macOS specific
 **/ios/**/*.mode1v3

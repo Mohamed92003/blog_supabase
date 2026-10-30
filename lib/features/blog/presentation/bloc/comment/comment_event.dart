@@ -1,3 +1,4 @@
+import 'package:blog_app/features/blog/domain/entities/comment_entity.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class CommentEvent extends Equatable {
@@ -21,7 +22,11 @@ class AddCommentEvent extends CommentEvent {
   final String content;
   final String authorId;
 
-  const AddCommentEvent({required this.postId, required this.content, required this.authorId});
+  const AddCommentEvent({
+    required this.postId,
+    required this.content,
+    required this.authorId,
+  });
 
   @override
   List<Object?> get props => [postId, content, authorId];
@@ -35,4 +40,22 @@ class DeleteCommentEvent extends CommentEvent {
 
   @override
   List<Object?> get props => [commentId, postId];
+}
+
+class NewCommentReceivedEvent extends CommentEvent {
+  final CommentEntity comment;
+
+  const NewCommentReceivedEvent(this.comment);
+
+  @override
+  List<Object?> get props => [comment];
+}
+
+class CommentRemovedEvent extends CommentEvent {
+  final String commentId;
+
+  const CommentRemovedEvent(this.commentId);
+
+  @override
+  List<Object?> get props => [commentId];
 }
