@@ -10,12 +10,12 @@ class SocialAuthDataSourceImpl implements SocialAuthDataSource {
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   bool _isInitialized = false;
 
+  static const serverClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
   SocialAuthDataSourceImpl(this._authClient);
 
   Future<void> _ensureInitialized() async {
     if (_isInitialized) return;
 
-    const serverClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
     await _googleSignIn.initialize(
       serverClientId: serverClientId.isEmpty ? null : serverClientId,
     );

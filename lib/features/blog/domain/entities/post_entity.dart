@@ -26,6 +26,33 @@ class PostEntity extends Equatable {
     required this.updatedAt,
   });
 
+  /// Returns this post with scalar fields taken from [update], keeping the cached [author].
+  PostEntity applyUpdate(PostEntity update) => PostEntity(
+    id: id,
+    title: update.title,
+    content: update.content,
+    imageUrl: update.imageUrl,
+    authorId: authorId,
+    author: author,
+    category: update.category,
+    viewCount: update.viewCount,
+    createdAt: createdAt,
+    updatedAt: update.updatedAt,
+  );
+
+  PostEntity withAuthor(ProfileEntity? newAuthor) => PostEntity(
+    id: id,
+    title: title,
+    content: content,
+    imageUrl: imageUrl,
+    authorId: authorId,
+    author: newAuthor,
+    category: category,
+    viewCount: viewCount,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  );
+
   @override
   List<Object?> get props => [id, title, content, imageUrl, authorId, author, category, viewCount, createdAt, updatedAt];
 }

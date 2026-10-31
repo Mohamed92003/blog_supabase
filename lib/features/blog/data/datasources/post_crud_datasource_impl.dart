@@ -112,4 +112,15 @@ class PostCrudDataSourceImpl implements PostCrudDataSource {
       throw ServerException('Failed to upload post image: ${e.toString()}');
     }
   }
+
+  @override
+  Future<void> incrementViews(String postId) async {
+    try {
+      await _databaseClient.rpc('increment_post_views', params: {'p_post_id': postId});
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException('Failed to increment views: ${e.toString()}');
+    }
+  }
 }

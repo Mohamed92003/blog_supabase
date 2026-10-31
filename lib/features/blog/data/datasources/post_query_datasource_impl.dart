@@ -4,6 +4,7 @@ import 'package:blog_app/core/error/exceptions.dart';
 import 'package:blog_app/core/network/supabase/database_client.dart';
 import 'package:blog_app/features/blog/data/datasources/post_query_datasource.dart';
 import 'package:blog_app/features/blog/data/models/post_model.dart';
+import 'package:blog_app/features/blog/data/models/profile_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/network/supabase/realtime_client.dart';
@@ -30,7 +31,6 @@ class PostQueryDataSourceImpl implements PostQueryDataSource {
         ascending: false,
         filters: category != null ? {'category': category} : null,
       );
-      print(response);
       return response.map((e) => PostModel.fromJson(e)).toList();
     } on ServerException {
       rethrow;
@@ -80,6 +80,18 @@ class PostQueryDataSourceImpl implements PostQueryDataSource {
   }
 
   @override
+  Future<PostModel> getPostById(String id) async {
+    try {
+      final response = await _databaseClient.selectById('posts', id, columns: '*,author:profiles!author_id(*)');
+      return PostModel.fromJson(response);
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException('Failed to get post: ${e.toString()}');
+    }
+  }
+
+  @override
   Stream<PostModel> watchNewPosts() {
     final controller = StreamController<PostModel>();
     final channel = _realtimeClient.subscribeToTable(
@@ -104,4 +116,50 @@ class PostQueryDataSourceImpl implements PostQueryDataSource {
     };
     return controller.stream;
   }
+
+  Stream<T> _watch<T>({
+    required String channelName,
+    required String table,
+    required PostgresChangeEvent event,
+    required T Function(Map<String, dynamic> record) mapper,
+  }) {
+    late final StreamController<T> controller;
+    RealtimeChannel? channel;
+    controller = StreamController<T>(
+      onListen: () {
+        channel = _realtimeClient.subscribeToTable(
+          channelName: channelName,
+          table: table,
+          event: event,
+          onChange: (payload) {
+            try {
+              controller.add(mapper(payload.newRecord));
+            } catch (e) {
+              controller.addError(ServerException('Failed to parse $table update: $e'));
+            }
+          },
+        );
+      },
+      onCancel: () async {
+        if (channel != null) await _realtimeClient.unSubscribeFromTable(channel!);
+      },
+    );
+    return controller.stream;
+  }
+
+  @override
+  Stream<PostModel> watchPostUpdates() => _watch<PostModel>(
+    channelName: 'post-updates',
+    table: 'posts',
+    event: PostgresChangeEvent.update,
+    mapper: PostModel.fromJson,
+  );
+
+  @override
+  Stream<ProfileModel> watchProfileUpdates() => _watch<ProfileModel>(
+    channelName: 'profile-updates',
+    table: 'profiles',
+    event: PostgresChangeEvent.update,
+    mapper: ProfileModel.fromJson,
+  );
 }

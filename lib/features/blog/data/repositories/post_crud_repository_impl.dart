@@ -99,4 +99,16 @@ class PostCrudRepositoryImpl implements PostCrudRepository {
       return Left(ServerFailure('Unexpected error: ${e.toString()}'));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> incrementViews(String postId) async {
+    try {
+      await postCrudDataSource.incrementViews(postId);
+      return const Right(null);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('Unexpected error: ${e.toString()}'));
+    }
+  }
 }

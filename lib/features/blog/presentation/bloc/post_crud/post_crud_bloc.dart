@@ -51,6 +51,8 @@ class PostCrudBloc extends Bloc<PostCrudEvent, PostCrudState> {
     Emitter<PostCrudState> emit,
   ) async {
     emit(PostCrudLoading());
+    // Best-effort: a failed view increment must not block loading the post.
+    await postCrudRepository.incrementViews(event.postId);
     final result = await postCrudRepository.getPostById(event.postId);
     result.fold(
       (failure) => emit(PostCrudError(failure.message)),

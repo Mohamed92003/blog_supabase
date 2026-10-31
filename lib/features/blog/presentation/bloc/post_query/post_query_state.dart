@@ -15,11 +15,12 @@ class PostQueryLoading extends PostQueryState {}
 class PostsLoaded extends PostQueryState {
   final List<PostEntity> posts;
   final bool hasMore;
+  final bool isAddingPost;
 
-  const PostsLoaded({required this.posts, this.hasMore = true});
+  const PostsLoaded({required this.posts, this.hasMore = true, this.isAddingPost = false});
 
   @override
-  List<Object?> get props => [posts, hasMore];
+  List<Object?> get props => [posts, hasMore, isAddingPost];
 }
 
 class PostQueryError extends PostQueryState {

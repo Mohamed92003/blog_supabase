@@ -65,7 +65,7 @@ class _CreatePostViewState extends State<CreatePostView> {
         listener: (context, state) {
           if (state is PostCreated) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post created!'), backgroundColor: Colors.green));
-            Navigator.of(context).pop(true);
+            Navigator.of(context).pop(state.post.id);
           } else if (state is PostCrudError) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red));
           }

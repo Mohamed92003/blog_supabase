@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:blog_app/core/di/injection_container.dart';
 import 'package:blog_app/core/widgets/category_filter_bar.dart';
 import 'package:blog_app/features/blog/domain/entities/post_entity.dart';
@@ -119,28 +121,42 @@ class _PostsListViewState extends State<PostsListView> {
                   );
                 }
                 if (state is PostsLoaded) {
+                  Future<void> onRefresh() {
+                    final completer = Completer<void>();
+                    context.read<PostQueryBloc>().add(RefreshPostsEvent(completer: completer));
+                    return completer.future;
+                  }
+
                   if (state.posts.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    return RefreshIndicator(
+                      onRefresh: onRefresh,
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         children: [
-                          Icon(Icons.article_outlined, size: 80, color: Colors.grey[400]),
-                          const SizedBox(height: 16),
-                          Text('No posts yet', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey)),
-                          const SizedBox(height: 8),
-                          const Text('Be the first to create a post!'),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.article_outlined, size: 80, color: Colors.grey[400]),
+                                const SizedBox(height: 16),
+                                Text('No posts yet', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey)),
+                                const SizedBox(height: 8),
+                                const Text('Be the first to create a post!'),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     );
                   }
                   return RefreshIndicator(
-                    onRefresh: () async {
-                      context.read<PostQueryBloc>().add(const RefreshPostsEvent());
-                    },
+                    onRefresh: onRefresh,
                     child: ListView.builder(
                       controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(16),
-                      itemCount: state.posts.length + (state.hasMore ? 1 : 0),
+                      itemCount: state.posts.length + ((state.hasMore || state.isAddingPost) ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index == state.posts.length) {
                           return const Center(
@@ -159,7 +175,22 @@ class _PostsListViewState extends State<PostsListView> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).pushNamed('/create-post'),
+        onPressed: () async {
+          final bloc = context.read<PostQueryBloc>();
+          final id = await Navigator.of(context).pushNamed('/create-post');
+          if (id is String) {
+            bloc.add(PostPublishedEvent(id));
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (_scrollController.hasClients) {
+                _scrollController.animateTo(
+                  _scrollController.position.maxScrollExtent,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                );
+              }
+            });
+          }
+        },
         child: const Icon(Icons.add),
       ),
     );
@@ -176,7 +207,11 @@ class _PostCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        onTap: () => Navigator.of(context).pushNamed('/post-detail', arguments: post.id),
+        onTap: () async {
+          final bloc = context.read<PostQueryBloc>();
+          final deleted = await Navigator.of(context).pushNamed('/post-detail', arguments: post.id);
+          if (deleted == true) bloc.add(PostDeletedEvent(post.id));
+        },
         borderRadius: BorderRadius.circular(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

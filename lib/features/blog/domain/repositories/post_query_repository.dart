@@ -1,5 +1,6 @@
 import 'package:blog_app/core/error/failures.dart';
 import 'package:blog_app/features/blog/domain/entities/post_entity.dart';
+import 'package:blog_app/features/blog/domain/entities/profile_entity.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class PostQueryRepository {
@@ -18,5 +19,11 @@ abstract class PostQueryRepository {
     required String query,
   });
 
+  Future<Either<Failure, PostEntity>> getPostById(String id);
+
   Stream<Either<Failure, PostEntity>> watchNewPosts();
+
+  Stream<Either<Failure, PostEntity>> watchPostUpdates();
+
+  Stream<Either<Failure, ProfileEntity>> watchProfileUpdates();
 }

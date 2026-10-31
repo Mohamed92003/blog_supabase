@@ -90,8 +90,8 @@ class DatabaseClientImpl implements DatabaseClient {
   }
 
   @override
+  /// Calls a Supabase RPC function.
   Future<void> rpc(String functionName, {Map<String, dynamic>? params}) async {
-    // TODO: Implement rpc
-    throw UnimplementedError('rpc not implemented yet');
+    await _client.rpc(functionName, params: params);
   }
 }

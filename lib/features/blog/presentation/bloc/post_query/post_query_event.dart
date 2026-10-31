@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 
 import '../../../domain/entities/post_entity.dart';
+import '../../../domain/entities/profile_entity.dart';
 
 abstract class PostQueryEvent extends Equatable {
   const PostQueryEvent();
@@ -42,14 +45,44 @@ class SearchPostsEvent extends PostQueryEvent {
 }
 
 class RefreshPostsEvent extends PostQueryEvent {
-  const RefreshPostsEvent();
+  /// Completed when the refresh finishes, so a RefreshIndicator can await it.
+  final Completer<void>? completer;
+
+  const RefreshPostsEvent({this.completer});
 }
 
-class NewPostReceivedEvent extends PostQueryEvent {
+class PostDeletedEvent extends PostQueryEvent {
+  final String postId;
+
+  const PostDeletedEvent(this.postId);
+
+  @override
+  List<Object> get props => [postId];
+}
+
+class PostPublishedEvent extends PostQueryEvent {
+  final String postId;
+
+  const PostPublishedEvent(this.postId);
+
+  @override
+  List<Object> get props => [postId];
+}
+
+class PostUpdatedEvent extends PostQueryEvent {
   final PostEntity post;
 
-  const NewPostReceivedEvent(this.post);
+  const PostUpdatedEvent(this.post);
 
   @override
   List<Object> get props => [post];
+}
+
+class ProfileUpdatedEvent extends PostQueryEvent {
+  final ProfileEntity profile;
+
+  const ProfileUpdatedEvent(this.profile);
+
+  @override
+  List<Object> get props => [profile];
 }
