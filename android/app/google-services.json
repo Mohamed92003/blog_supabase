@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "833252835825",
+    "project_id": "blog-app-7e726",
+    "storage_bucket": "blog-app-7e726.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:833252835825:android:5a8616aade39cdaeb98450",
+        "android_client_info": {
+          "package_name": "com.elgendy.auth_flow_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5PRjiWdfcOn3rqKptO9luF4pryNQudB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
